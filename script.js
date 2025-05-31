@@ -87,7 +87,8 @@ function clearInput() {
     latexInput.focus();
 }
 
-// 导出为 PNG
+
+// 导出为 PNG - 优化版本
 function exportToPNG() {
     if (!mathOutput.innerHTML.trim() || mathOutput.innerHTML.includes('公式将在这里显示')) {
         alert('请先输入并渲染公式');
@@ -104,8 +105,8 @@ function exportToPNG() {
     // 等待MathJax完全渲染完成
     setTimeout(() => {
         try {
-            // 使用SVG转Canvas的方法
-            convertSVGToPNG(svgElement);
+            // 使用优化的SVG转Canvas方法
+            convertSVGToPNGOptimized(svgElement);
         } catch (err) {
             console.error('PNG 导出失败:', err);
             alert('导出失败: ' + err.message);
@@ -113,23 +114,42 @@ function exportToPNG() {
     }, 100);
 }
 
-// SVG转PNG的新方法
-function convertSVGToPNG(svgElement) {
+// 优化的SVG转PNG方法
+function convertSVGToPNGOptimized(svgElement) {
     // 获取SVG的尺寸
     const rect = svgElement.getBoundingClientRect();
-    const width = rect.width || 200;
-    const height = rect.height || 100;
+    const width = Math.max(rect.width, 200);
+    const height = Math.max(rect.height, 100);
+    
+    // 克隆SVG并添加样式
+    const clonedSvg = svgElement.cloneNode(true);
+    
+    // 设置SVG属性
+    clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+    clonedSvg.setAttribute('width', width);
+    clonedSvg.setAttribute('height', height);
+    clonedSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+    
+    // 添加内联样式确保字体正确显示
+    const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+    styleElement.textContent = `
+        text { font-family: 'Times New Roman', Times, serif; }
+        .MathJax_SVG { font-family: 'Times New Roman', Times, serif; }
+    `;
+    clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
+    
+    // 序列化SVG
+    const svgData = new XMLSerializer().serializeToString(clonedSvg);
+    const svgDataUrl = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
     
     // 创建canvas
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     
     // 设置高分辨率
-    const scale = 3;
+    const scale = 2;
     canvas.width = width * scale;
     canvas.height = height * scale;
-    canvas.style.width = width + 'px';
-    canvas.style.height = height + 'px';
     
     // 设置白色背景
     ctx.fillStyle = '#ffffff';
@@ -138,52 +158,47 @@ function convertSVGToPNG(svgElement) {
     // 缩放上下文
     ctx.scale(scale, scale);
     
-    // 克隆SVG并序列化
-    const clonedSvg = svgElement.cloneNode(true);
-    clonedSvg.setAttribute('width', width);
-    clonedSvg.setAttribute('height', height);
-    
-    const svgData = new XMLSerializer().serializeToString(clonedSvg);
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
-    const url = URL.createObjectURL(svgBlob);
-    
     // 创建图片对象
     const img = new Image();
     img.onload = function() {
-        // 绘制到canvas
-        ctx.drawImage(img, 0, 0, width, height);
-        
-        // 转换为PNG并下载
-        canvas.toBlob(function(blob) {
-            if (blob) {
-                const link = document.createElement('a');
-                link.download = `latex-formula-${getTimestamp()}.png`;
-                link.href = URL.createObjectURL(blob);
-                
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // 清理URL
-                URL.revokeObjectURL(link.href);
-                URL.revokeObjectURL(url);
-                
-                console.log('PNG 导出完成');
-            } else {
-                alert('PNG 生成失败，请重试');
-            }
-        }, 'image/png', 1.0);
+        try {
+            // 绘制到canvas
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            // 转换为PNG并下载
+            canvas.toBlob(function(blob) {
+                if (blob) {
+                    const link = document.createElement('a');
+                    link.download = `latex-formula-${getTimestamp()}.png`;
+                    link.href = URL.createObjectURL(blob);
+                    
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // 清理URL
+                    URL.revokeObjectURL(link.href);
+                    
+                    console.log('PNG 导出完成');
+                } else {
+                    alert('PNG 生成失败，请重试');
+                }
+            }, 'image/png', 1.0);
+        } catch (err) {
+            console.error('Canvas绘制失败:', err);
+            alert('图片生成失败: ' + err.message);
+        }
     };
     
-    img.onerror = function() {
-        URL.revokeObjectURL(url);
+    img.onerror = function(err) {
+        console.error('图片加载失败:', err);
         alert('图片加载失败，请重试');
     };
     
-    img.src = url;
+    img.src = svgDataUrl;
 }
 
-// 导出为 SVG
+// 导出为 SVG - 改进版本
 function exportToSVG() {
     if (!mathOutput.innerHTML.trim() || mathOutput.innerHTML.includes('公式将在这里显示')) {
         alert('请先输入并渲染公式');
@@ -195,7 +210,7 @@ function exportToSVG() {
         const svgElement = mathOutput.querySelector('svg');
         
         if (!svgElement) {
-            alert('未找到 SVG 元素，请确保公式已正确渲染。\n提示：请等待公式完全加载后再尝试导出。');
+            alert('未找到 SVG 元素，请确保公式已正确渲染');
             return;
         }
         
@@ -206,22 +221,28 @@ function exportToSVG() {
         clonedSvg.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         clonedSvg.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
         
-        // 获取计算后的样式
-        const computedStyle = window.getComputedStyle(svgElement);
-        
         // 获取 SVG 的实际尺寸
         const rect = svgElement.getBoundingClientRect();
-        const width = rect.width || svgElement.clientWidth || parseFloat(svgElement.getAttribute('width')) || 100;
-        const height = rect.height || svgElement.clientHeight || parseFloat(svgElement.getAttribute('height')) || 50;
+        const width = Math.max(rect.width, 200);
+        const height = Math.max(rect.height, 100);
         
         // 设置尺寸和视图框
         clonedSvg.setAttribute('width', width);
         clonedSvg.setAttribute('height', height);
         clonedSvg.setAttribute('viewBox', `0 0 ${width} ${height}`);
         
-        // 确保字体样式被保留
-        clonedSvg.style.fontFamily = computedStyle.fontFamily || 'Times, serif';
-        clonedSvg.style.fontSize = computedStyle.fontSize || '16px';
+        // 添加内联样式确保字体正确显示
+        const styleElement = document.createElementNS('http://www.w3.org/2000/svg', 'style');
+        styleElement.textContent = `
+            text { 
+                font-family: 'Times New Roman', Times, serif; 
+                font-size: 16px;
+            }
+            .MathJax_SVG { 
+                font-family: 'Times New Roman', Times, serif; 
+            }
+        `;
+        clonedSvg.insertBefore(styleElement, clonedSvg.firstChild);
         
         // 添加XML声明和DOCTYPE
         const svgString = '<?xml version="1.0" encoding="UTF-8"?>\n' +
@@ -247,7 +268,7 @@ function exportToSVG() {
         console.log('SVG 导出完成');
     } catch (err) {
         console.error('SVG 导出失败:', err);
-        alert('SVG 导出失败: ' + err.message + '\n请重试或联系技术支持');
+        alert('SVG 导出失败: ' + err.message);
     }
 }
 
