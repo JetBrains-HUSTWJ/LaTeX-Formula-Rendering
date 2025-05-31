@@ -6,9 +6,14 @@ const clearBtn = document.getElementById('clear-btn');
 const exportPngBtn = document.getElementById('export-png');
 const exportSvgBtn = document.getElementById('export-svg');
 const exampleBtns = document.querySelectorAll('.example-btn');
+const mathFontSelect = document.getElementById('math-font-select');
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
 
 // 初始化
 document.addEventListener('DOMContentLoaded', function() {
+    // 初始化主题管理器
+    window.themeManager = new ThemeManager();
+    
     // 初始渲染
     renderMath();
     
@@ -17,6 +22,15 @@ document.addEventListener('DOMContentLoaded', function() {
     clearBtn.addEventListener('click', clearInput);
     exportPngBtn.addEventListener('click', exportToPNG);
     exportSvgBtn.addEventListener('click', exportToSVG);
+    
+    // 数学字体切换事件
+    if (mathFontSelect) {
+        mathFontSelect.addEventListener('change', changeMathFont);
+        // 加载保存的字体设置
+        const savedFont = localStorage.getItem('mathFont') || 'default';
+        mathFontSelect.value = savedFont;
+        applyMathFont(savedFont);
+    }
     
     // 实时渲染（延迟执行）
     let renderTimeout;
@@ -42,6 +56,76 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 });
+
+// 数学字体切换功能
+function changeMathFont() {
+    const selectedFont = mathFontSelect.value;
+    console.log('切换字体到:', selectedFont);
+    applyMathFont(selectedFont);
+    localStorage.setItem('mathFont', selectedFont);
+    // 重新渲染数学公式以应用新字体
+    setTimeout(() => {
+        renderMath();
+    }, 100);
+}
+
+function applyMathFont(fontType) {
+    const mathOutput = document.getElementById('math-output');
+    
+    if (!mathOutput) {
+        console.error('找不到数学输出元素');
+        return;
+    }
+    
+    // 移除之前的字体类
+    mathOutput.classList.remove('font-latin-modern', 'font-stix', 'font-computer-modern', 'font-tex-gyre');
+    
+    // 应用新的字体类
+    switch(fontType) {
+        case 'latin-modern':
+            mathOutput.classList.add('font-latin-modern');
+            console.log('应用 Latin Modern 字体');
+            break;
+        case 'stix':
+            mathOutput.classList.add('font-stix');
+            console.log('应用 STIX 字体');
+            break;
+        case 'computer-modern':
+            mathOutput.classList.add('font-computer-modern');
+            console.log('应用 Computer Modern 字体');
+            break;
+        case 'tex-gyre':
+            mathOutput.classList.add('font-tex-gyre');
+            console.log('应用 TeX Gyre 字体');
+            break;
+        default:
+            console.log('使用默认字体');
+            break;
+    }
+    
+    // 强制重新计算样式
+    mathOutput.offsetHeight;
+    
+    // 更新MathJax配置
+    if (window.MathJax && window.MathJax.startup) {
+        updateMathJaxFont(fontType);
+    }
+}
+
+function updateMathJaxFont(fontType) {
+    // 根据字体类型更新MathJax配置
+    const fontMap = {
+        'latin-modern': 'Latin-Modern',
+        'stix': 'STIX-Web',
+        'computer-modern': 'TeX',
+        'tex-gyre': 'TeX',
+        'default': 'TeX'
+    };
+    
+    if (window.MathJax.config && window.MathJax.config.svg) {
+        window.MathJax.config.svg.font = fontMap[fontType] || 'TeX';
+    }
+}
 
 // 渲染数学公式
 function renderMath() {

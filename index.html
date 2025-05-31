@@ -13,6 +13,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Maple+Mono:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <!-- 思源字体 -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Han+Serif+SC:wght@400;500;600&family=Source+Han+Sans+SC:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- 数学字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=STIX+Two+Text:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <!-- 备用数学字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <link href="https://fonts.googleapis.com/css2?family=Lora:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="style.css">
     
@@ -56,12 +62,23 @@
                 <div class="input-controls">
                     <button id="render-btn">渲染公式</button>
                     <button id="clear-btn">清空</button>
+                    <button id="theme-toggle-btn">🌙 切换主题</button>
                 </div>
             </div>
             
             <div class="preview-section">
                 <div class="preview-header">
                     <h3>预览</h3>
+                    <div class="font-controls">
+                        <label for="math-font-select">数学字体：</label>
+                        <select id="math-font-select">
+                            <option value="default">默认字体</option>
+                            <option value="latin-modern">Latin Modern Math</option>
+                            <option value="stix">STIX Two Math</option>
+                            <option value="computer-modern">Computer Modern</option>
+                            <option value="tex-gyre">TeX Gyre Termes</option>
+                        </select>
+                    </div>
                     <div class="export-controls">
                         <button id="export-png">导出 PNG</button>
                         <button id="export-svg">导出 SVG</button>

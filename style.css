@@ -96,6 +96,7 @@ main {
     margin-top: 15px;
     display: flex;
     gap: 10px;
+    flex-wrap: wrap;
 }
 
 /* 按钮样式 */
@@ -112,25 +113,49 @@ button {
     letter-spacing: 0.5px;
 }
 
+#render-btn, #clear-btn, #theme-toggle-btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-family: 'Helvetica', '思源黑体', 'Source Han Sans SC', sans-serif;
+}
+
 #render-btn {
-    background: linear-gradient(135deg, #4299e1, #3182ce);
+    background: linear-gradient(135deg, var(--accent-color, #63b3ed), var(--accent-hover, #4299e1));
     color: white;
 }
 
 #render-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(66, 153, 225, 0.4);
+    box-shadow: 0 8px 25px rgba(99, 179, 237, 0.3);
 }
 
 #clear-btn {
-    background: #4a5568;
-    color: #cbd5e0;
-    border: 2px solid #718096;
+    background: var(--bg-secondary, #2d3748);
+    color: var(--text-primary, #e2e8f0);
+    border: 2px solid var(--border-color, #4a5568);
 }
 
 #clear-btn:hover {
-    background: #718096;
-    color: #f7fafc;
+    background: var(--border-color, #4a5568);
+    transform: translateY(-2px);
+}
+
+#theme-toggle-btn {
+    background: linear-gradient(135deg, #805ad5, #6b46c1);
+    color: white;
+    font-size: 14px;
+    padding: 10px 16px;
+}
+
+#theme-toggle-btn:hover {
+    background: linear-gradient(135deg, #6b46c1, #553c9a);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(128, 90, 213, 0.3);
 }
 
 /* 预览区域 */
@@ -143,6 +168,43 @@ button {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--border-color, #4a5568);
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.font-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.font-controls label {
+    color: var(--text-secondary, #cbd5e0);
+    font-size: 14px;
+    font-weight: 500;
+}
+
+#math-font-select {
+    padding: 6px 12px;
+    border: 1px solid var(--border-color, #4a5568);
+    border-radius: 6px;
+    background: var(--bg-secondary, #2d3748);
+    color: var(--text-primary, #e2e8f0);
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+#math-font-select:hover {
+    border-color: var(--border-hover, #718096);
+}
+
+#math-font-select:focus {
+    outline: none;
+    border-color: var(--accent-color, #63b3ed);
+    box-shadow: 0 0 0 3px rgba(99, 179, 237, 0.1);
 }
 
 .preview-header h3 {
@@ -180,6 +242,27 @@ button {
     transition: all 0.3s ease;
     font-family: 'Latin Modern Math', 'STIX Two Math', 'Times New Roman', 'Source Han Serif SC', '思源宋体', serif;
     color: #e2e8f0;
+}
+
+/* 数学字体样式 */
+#math-output.font-latin-modern {
+    font-family: 'Lora', 'EB Garamond', '思源宋体', 'Source Han Serif SC', serif;
+    font-weight: 500;
+}
+
+#math-output.font-stix {
+    font-family: 'STIX Two Text', 'Times New Roman', 'EB Garamond', '思源宋体', 'Source Han Serif SC', serif;
+    font-weight: 400;
+}
+
+#math-output.font-computer-modern {
+    font-family: 'Crimson Text', 'EB Garamond', '思源宋体', 'Source Han Serif SC', serif;
+    font-weight: 400;
+}
+
+#math-output.font-tex-gyre {
+    font-family: 'Libre Baskerville', 'Times New Roman', 'EB Garamond', '思源宋体', 'Source Han Serif SC', serif;
+    font-weight: 400;
 }
 
 .math-display.has-content {

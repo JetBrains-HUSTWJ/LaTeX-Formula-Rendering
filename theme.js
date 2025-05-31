@@ -6,42 +6,36 @@ class ThemeManager {
     }
 
     init() {
-        this.createThemeToggle();
+        this.bindThemeToggle();
         this.applyTheme(this.currentTheme);
     }
 
-    createThemeToggle() {
-        // 创建主题切换按钮
-        const themeToggle = document.createElement('button');
-        themeToggle.id = 'theme-toggle';
-        themeToggle.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
-        themeToggle.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        `;
-        
-        themeToggle.addEventListener('click', () => this.toggleTheme());
-        document.body.appendChild(themeToggle);
+    bindThemeToggle() {
+        // 直接绑定按钮，因为ThemeManager在DOMContentLoaded中初始化
+        const themeToggle = document.getElementById('theme-toggle-btn');
+        if (themeToggle) {
+            themeToggle.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
+            themeToggle.addEventListener('click', () => this.toggleTheme());
+            console.log('主题切换按钮已绑定，当前主题:', this.currentTheme);
+        } else {
+            console.error('找不到主题切换按钮元素');
+        }
     }
 
     toggleTheme() {
         this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+        console.log('切换主题到:', this.currentTheme);
         this.applyTheme(this.currentTheme);
         localStorage.setItem('theme', this.currentTheme);
         
         // 更新按钮文本
-        const toggleBtn = document.getElementById('theme-toggle');
-        toggleBtn.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
+        const toggleBtn = document.getElementById('theme-toggle-btn');
+        if (toggleBtn) {
+            toggleBtn.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
+            console.log('按钮文本已更新');
+        } else {
+            console.error('找不到主题切换按钮');
+        }
     }
 
     applyTheme(theme) {
@@ -62,12 +56,7 @@ class ThemeManager {
             root.style.setProperty('--success-color', '#38a169');
             root.style.setProperty('--success-hover', '#2f855a');
             
-            // 更新主题切换按钮样式
-            const toggleBtn = document.getElementById('theme-toggle');
-            if (toggleBtn) {
-                toggleBtn.style.background = 'linear-gradient(135deg, #4299e1, #3182ce)';
-                toggleBtn.style.color = 'white';
-            }
+            // 暗色主题下的按钮样式已在CSS中定义
         } else {
             // 亮色主题变量
             root.style.setProperty('--bg-primary', 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)');
@@ -83,12 +72,7 @@ class ThemeManager {
             root.style.setProperty('--success-color', '#28a745');
             root.style.setProperty('--success-hover', '#20c997');
             
-            // 更新主题切换按钮样式
-            const toggleBtn = document.getElementById('theme-toggle');
-            if (toggleBtn) {
-                toggleBtn.style.background = 'linear-gradient(135deg, #667eea, #764ba2)';
-                toggleBtn.style.color = 'white';
-            }
+            // 亮色主题下的按钮样式已在CSS中定义
         }
         
         // 触发主题变更事件
