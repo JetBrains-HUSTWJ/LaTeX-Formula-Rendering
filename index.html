@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX 公式渲染器</title>
+    <!-- Google Fonts for better monospace fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <!-- MathJax 配置 -->
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true,
+                processEnvironments: true
+            },
+            svg: {
+                fontCache: 'global'
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <!-- html2canvas 用于图片导出 -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>LaTeX 公式渲染器</h1>
+            <p>输入 LaTeX 公式，实时预览并支持导出为图片</p>
+        </header>
+        
+        <main>
+            <div class="input-section">
+                <label for="latex-input">LaTeX 公式输入：</label>
+                <textarea id="latex-input" placeholder="请输入 LaTeX 公式，例如：\frac{a}{b} + \sqrt{c^2 + d^2}">
+\frac{d}{dx}\left( \int_{0}^{x} f(u) \, du\right) = f(x)
+                </textarea>
+                <div class="input-controls">
+                    <button id="render-btn">渲染公式</button>
+                    <button id="clear-btn">清空</button>
+                </div>
+            </div>
+            
+            <div class="preview-section">
+                <div class="preview-header">
+                    <h3>预览</h3>
+                    <div class="export-controls">
+                        <button id="export-png">导出 PNG</button>
+                        <button id="export-svg">导出 SVG</button>
+                    </div>
+                </div>
+                <div id="math-output" class="math-display">
+                    <!-- 渲染的数学公式将显示在这里 -->
+                </div>
+            </div>
+            
+            <div class="examples-section">
+                <h3>示例公式</h3>
+                <div class="examples-grid">
+                    <button class="example-btn" data-formula="\frac{a}{b} + \sqrt{c^2 + d^2}">分数和根号</button>
+                    <button class="example-btn" data-formula="\sum_{i=1}^{n} x_i = x_1 + x_2 + \cdots + x_n">求和</button>
+                    <button class="example-btn" data-formula="\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}">积分</button>
+                    <button class="example-btn" data-formula="\lim_{x \to 0} \frac{\sin x}{x} = 1">极限</button>
+                    <button class="example-btn" data-formula="\begin{pmatrix} a & b \\ c & d \end{pmatrix}">矩阵</button>
+                    <button class="example-btn" data-formula="E = mc^2">爱因斯坦质能方程</button>
+                </div>
+            </div>
+        </main>
+        
+        <footer>
+            <p>使用 MathJax 进行 LaTeX 渲染 | 支持导出为 PNG 和 SVG 格式</p>
+        </footer>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
