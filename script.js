@@ -106,7 +106,7 @@ function applyMathFont(fontType) {
     // 强制重新计算样式
     mathOutput.offsetHeight;
     
-    // 更新MathJax配置
+    // 更新MathJax字体配置
     if (window.MathJax && window.MathJax.startup) {
         updateMathJaxFont(fontType);
     }
@@ -122,8 +122,13 @@ function updateMathJaxFont(fontType) {
         'default': 'TeX'
     };
     
-    if (window.MathJax.config && window.MathJax.config.svg) {
+    // 更新MathJax配置
+    if (window.MathJax && window.MathJax.config) {
+        if (!window.MathJax.config.svg) {
+            window.MathJax.config.svg = {};
+        }
         window.MathJax.config.svg.font = fontMap[fontType] || 'TeX';
+        console.log('MathJax字体配置已更新为:', fontMap[fontType] || 'TeX');
     }
 }
 

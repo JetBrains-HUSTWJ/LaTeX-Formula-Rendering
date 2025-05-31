@@ -11,14 +11,22 @@ class ThemeManager {
     }
 
     bindThemeToggle() {
-        // 直接绑定按钮，因为ThemeManager在DOMContentLoaded中初始化
-        const themeToggle = document.getElementById('theme-toggle-btn');
-        if (themeToggle) {
-            themeToggle.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
-            themeToggle.addEventListener('click', () => this.toggleTheme());
-            console.log('主题切换按钮已绑定，当前主题:', this.currentTheme);
+        // 等待DOM完全加载后绑定按钮
+        const bindButton = () => {
+            const themeToggle = document.getElementById('theme-toggle-btn');
+            if (themeToggle) {
+                themeToggle.innerHTML = this.currentTheme === 'dark' ? '🌞 亮色模式' : '🌙 暗色模式';
+                themeToggle.addEventListener('click', () => this.toggleTheme());
+                console.log('主题切换按钮已绑定，当前主题:', this.currentTheme);
+            } else {
+                console.error('找不到主题切换按钮元素');
+            }
+        };
+        
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', bindButton);
         } else {
-            console.error('找不到主题切换按钮元素');
+            bindButton();
         }
     }
 
